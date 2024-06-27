@@ -15,8 +15,6 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain_community.chat_models import ChatOpenAI
-from dotenv import load_dotenv
-load_dotenv()
 ## title
 st.markdown("<h1 style='text-align: center;'>AI Voice Assistant</h1>", unsafe_allow_html=True)
 
