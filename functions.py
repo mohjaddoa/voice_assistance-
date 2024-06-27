@@ -9,8 +9,6 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain_community.chat_models import ChatOpenAI
-from dotenv import load_dotenv
-load_dotenv()
 os.environ["OPENAI_API_KEY"] = "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"
 
 '''get_paths function take upload_files as input from
