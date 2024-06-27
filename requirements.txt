@@ -4,3 +4,4 @@ langchain
 pandas
 tabulate
 langchain_community
+langchain-experimental
