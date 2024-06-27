@@ -1,5 +1,4 @@
 import speech_recognition as sr 
-import pyaudio
 from gtts import gTTS
 import playsound
 import os
