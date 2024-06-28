@@ -14,7 +14,7 @@ import sys
 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-os.environ["OPENAI_API_KEY"] = "sk-proj-9TTMsVojWoPP8Xl1EfGMT3BlbkFJ9JcBCDTybho9xiXEvwNQ"
+os.environ["OPENAI_API_KEY"] = "sk-proj-brqN4OAVd8oLBpIMI5RJT3BlbkFJAM1GDoUFx9FhQ4OPUSS8"
 
 '''get_paths function take upload_files as input from
 streamlit return list of files path'''
@@ -64,7 +64,7 @@ def text2vectors(set_text,folder_path,data_embedding):
 
 def chat_with_llm(query,vector_data):
     chaining = RetrievalQA.from_chain_type(
-    llm=ChatOpenAI(temperature=0,model_name='gpt-4-0613'),
+    llm=ChatOpenAI(),
     retriever=vector_data.as_retriever(search_kwargs={'k': 7}),
     return_source_documents=True)
     result = chaining({'query': query})
