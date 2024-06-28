@@ -1,45 +1,107 @@
 import streamlit as st
-import pandas as pd
-from langchain.chat_models import ChatOpenAI
-from langchain.agents.agent_types import AgentType
-from langchain_experimental.agents import create_pandas_dataframe_agent
+import os
+import tempfile
+from functions import get_paths,files_to_text,text_spliter,text2vectors,chat_with_llm
+from voice_recognition import get_audio,speech
+import sys
+import time 
+import tempfile
+from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import Docx2txtLoader
+from langchain.document_loaders import TextLoader
+from langchain.vectorstores import chroma
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.chains import RetrievalQA
+from langchain_community.chat_models import ChatOpenAI
+## title
+st.markdown("<h1 style='text-align: center;'>AI Voice Assistant</h1>", unsafe_allow_html=True)
 
-# Page title
-st.set_page_config(page_title='🦜🔗 Ask the Data App')
-st.title('🦜🔗 Ask the Data App')
+image_path = 'https://moh2006.000webhostapp.com/images/sarah.jpg'
 
-# Load CSV file
-def load_csv(input_csv):
-  df = pd.read_csv(input_csv)
-  with st.expander('See DataFrame'):
-    st.write(df)
-  return df
+html_code = f"""
+<div style="display: flex; justify-content: center;">
+    <img src="{image_path}" alt="Centered Image" style="width: 300px; height: 300px;">
+</div>
+"""
 
-# Generate LLM response
-def generate_response(csv_file, input_query):
-  llm = ChatOpenAI(model_name='gpt-3.5-turbo-0613', temperature=0.2, openai_api_key=openai_api_key)
-  df = load_csv(csv_file)
-  # Create Pandas DataFrame Agent
-  agent = create_pandas_dataframe_agent(llm, df, verbose=True, agent_type=AgentType.OPENAI_FUNCTIONS)
-  # Perform Query using the Agent
-  response = agent.run(input_query)
-  return st.success(response)
+# Display the HTML with the image
+st.markdown(html_code, unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Now, you can talk with your files:PDF,DOCX,TXT</h1>", unsafe_allow_html=True)
+# Custom CSS to center the link
+st.markdown(
+    """
+    <style>
+    .centered-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-# Input widgets
-uploaded_file = st.file_uploader('Upload a CSV file', type=['csv'])
-question_list = [
-  'How many rows are there?',
-  'What is the range of values for MolWt with logS greater than 0?',
-  'How many rows have MolLogP value greater than 0.',
-  'Other']
-query_text = st.selectbox('Select an example query:', question_list, disabled=not uploaded_file)
-openai_api_key = st.text_input('OpenAI API Key', type='password', disabled=not (uploaded_file and query_text))
+# Create a container with the centered-link class
+st.markdown(
+    """
+    <div class="centered-link">
+        <a href="https://github.com/mohjaddoa/talk_2_files/" target="_blank">https://github.com/mohjaddoa/talk_2_files/</a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-# App logic
-if query_text is 'Other':
-  query_text = st.text_input('Enter your query:', placeholder = 'Enter query here ...', disabled=not uploaded_file)
-if not openai_api_key.startswith('sk-'):
-  st.warning('Please enter your OpenAI API key!', icon='⚠')
-if openai_api_key.startswith('sk-') and (uploaded_file is not None):
-  st.header('Output')
-  generate_response(uploaded_file, query_text)
+st.markdown("<br>", unsafe_allow_html=True)
+# selecting multiple files
+uploaded_files = st.file_uploader("Choose files: PDF,DOCX,TXT", accept_multiple_files=True,type=['pdf', 'txt', 'docx'])
+# voice_button=st.button("voice query")
+## this is loop for saveing all files content on temp,and get fils path
+if uploaded_files:
+    paths = get_paths(uploaded_files)
+    # st.write(paths)
+    set_text = files_to_text(paths)
+    text_spliting = text_spliter(set_text)
+    vector_data = text2vectors(text_spliting,'documents','OpenAIEmbeddings')
+    with st.spinner('processing ....'):
+        time.sleep(5)
+    st.markdown("<h3 style='text-align: center;'>enter your query : by voice </h3>", unsafe_allow_html=True)
+    query = st.text_input("enter your query ...")
+    # voice_button=st.button("voice query",disabled=False)    
+    if query :
+        voice_button=st.button("voice query",disabled=True)
+        chat_response = chat_with_llm(query,vector_data)
+        with st.spinner('processing ....'):
+            time.sleep(5)
+        status='response:'
+        st.write(status)
+        st.write(chat_response)
+    else:
+        voice_button=st.button("voice query",disabled=False)
+        query=""
+        if voice_button:
+            speech('This is Sarah AI Voice Assistant , How can I help You?')
+            while(True):
+                text_voice = get_audio()
+                # text_voice += "chatgpt, ask me several clarifying questions that help you get better context"
+                if(text_voice == "stop" or text_voice == "close"):
+                    st.write("stop voice conversation..." )
+                    sys.exit()
+                else:
+                    st.write("your query :"+text_voice)
+                    st.spinner('query processing ....')
+                    chat_response = chat_with_llm(text_voice,vector_data)
+                    status='AI response:'
+                    st.write(status)
+                    st.write(chat_response)
+                    speech(chat_response)
+                    speech(" IF you want continue ask more question , or quit by saying stop or close")
+
+
+
+
+
+
+
+    
+ 
