@@ -16,7 +16,9 @@ from langchain.chains import RetrievalQA
 from langchain_community.chat_models import ChatOpenAI
 import pysqlite3
 import sys
-sys.modules[‘sqlite3’] = sys.modules.pop(‘pysqlite3’)
+
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 ## title
 st.markdown("<h1 style='text-align: center;'>AI Voice Assistant</h1>", unsafe_allow_html=True)
 
