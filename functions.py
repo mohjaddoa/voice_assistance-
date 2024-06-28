@@ -11,7 +11,9 @@ from langchain.chains import RetrievalQA
 from langchain_community.chat_models import ChatOpenAI
 import pysqlite3
 import sys
-sys.modules[‘sqlite3’] = sys.modules.pop(‘pysqlite3’)
+
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 os.environ["OPENAI_API_KEY"] = "sk-proj-GD0JQam05SC8m2yGbTrHT3BlbkFJr75PkmtTqnCGFEAbkQbp"
 
 '''get_paths function take upload_files as input from
