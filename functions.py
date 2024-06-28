@@ -14,7 +14,7 @@ import sys
 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-os.environ["OPENAI_API_KEY"] = "sk-proj-GD0JQam05SC8m2yGbTrHT3BlbkFJr75PkmtTqnCGFEAbkQbp"
+os.environ["OPENAI_API_KEY"] = "sk-proj-9TTMsVojWoPP8Xl1EfGMT3BlbkFJ9JcBCDTybho9xiXEvwNQ"
 
 '''get_paths function take upload_files as input from
 streamlit return list of files path'''
